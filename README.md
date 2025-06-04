@@ -12,3 +12,7 @@ Tests use Node's built in test runner and can be executed with:
 ```bash
 npm test
 ```
+
+## CI
+
+Tests are automatically run for pushes and pull requests using GitHub Actions.
