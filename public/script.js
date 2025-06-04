@@ -7,10 +7,17 @@ const disconnectBtn = document.getElementById('disconnect');
 const sendBtn = document.getElementById('send');
 const fieldsDiv = document.getElementById('fields');
 const addFieldBtn = document.getElementById('add-field');
+const statusBar = document.getElementById('status');
+
+function setStatus(text) {
+  statusBar.textContent = text;
+}
 
 const manager = new SerialManager(navigator.serial, (msg) => {
   output.value += JSON.stringify(msg) + '\n';
 });
+
+setStatus('Disconnected');
 
 function createBuilder(isArray) {
   const container = document.createElement('div');
@@ -162,11 +169,14 @@ updatePreview();
 
 connectBtn.addEventListener('click', async () => {
   try {
+    setStatus('Connecting...');
     await manager.connect();
     connectBtn.disabled = true;
     disconnectBtn.disabled = false;
     sendBtn.disabled = false;
+    setStatus('Connected');
   } catch (e) {
+    setStatus('Disconnected');
     alert(e.message);
   }
 });
@@ -176,6 +186,7 @@ disconnectBtn.addEventListener('click', async () => {
   connectBtn.disabled = false;
   disconnectBtn.disabled = true;
   sendBtn.disabled = true;
+  setStatus('Disconnected');
 });
 
 sendBtn.addEventListener('click', async () => {
