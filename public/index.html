@@ -135,12 +135,23 @@
       gap: 0.5rem;
       align-items: flex-start;
     }
+
+    .page {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .page.active {
+      display: flex;
+    }
   </style>
 </head>
 <body>
   <div id="app">
     <div id="sidebar">
-      <div class="tab active">Demo</div>
+      <div class="tab active" id="tab-tx" title="Transmit">📤</div>
+      <div class="tab" id="tab-rx" title="Receive">📥</div>
     </div>
     <div id="main">
       <h1>WebSerial JSON Demo</h1>
@@ -149,17 +160,22 @@
         <button id="connect">Connect</button>
         <button id="disconnect" disabled>Disconnect</button>
       </div>
-      <textarea id="output" rows="10" cols="50" readonly></textarea>
 
-      <div id="builder">
-        <h2>Build JSON</h2>
-        <div id="fields"></div>
-        <button id="add-field" type="button">Add Field</button>
+      <div id="tx-page" class="page active">
+        <div id="builder">
+          <h2>Build JSON</h2>
+          <div id="fields"></div>
+          <button id="add-field" type="button">Add Field</button>
+        </div>
+
+        <div id="send-controls">
+          <textarea id="input" rows="5" cols="50" placeholder='{"hello":"world"}'></textarea>
+          <button id="send" disabled>Send</button>
+        </div>
       </div>
 
-      <div id="send-controls">
-        <textarea id="input" rows="5" cols="50" placeholder='{"hello":"world"}'></textarea>
-        <button id="send" disabled>Send</button>
+      <div id="rx-page" class="page">
+        <textarea id="output" rows="10" cols="50" readonly></textarea>
       </div>
     </div>
     <div id="status">Disconnected</div>
