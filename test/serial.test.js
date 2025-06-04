@@ -17,7 +17,7 @@ test('state transitions and message handling', async (t) => {
   strictEqual(manager.state, STATES.CONNECTED);
 
   // process incoming message
-  await manager._readLoop();
+  await manager.readLoopPromise;
   deepStrictEqual(messages, [{ foo: 1 }]);
 
   await manager.send({ bar: 2 });
