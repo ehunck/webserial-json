@@ -8,6 +8,10 @@ const sendBtn = document.getElementById('send');
 const fieldsDiv = document.getElementById('fields');
 const addFieldBtn = document.getElementById('add-field');
 const statusBar = document.getElementById('status');
+const tabTx = document.getElementById('tab-tx');
+const tabRx = document.getElementById('tab-rx');
+const txPage = document.getElementById('tx-page');
+const rxPage = document.getElementById('rx-page');
 
 function setStatus(text) {
   statusBar.textContent = text;
@@ -18,6 +22,16 @@ const manager = new SerialManager(navigator.serial, (msg) => {
 });
 
 setStatus('Disconnected');
+
+function showPage(page) {
+  txPage.classList.toggle('active', page === 'tx');
+  rxPage.classList.toggle('active', page === 'rx');
+  tabTx.classList.toggle('active', page === 'tx');
+  tabRx.classList.toggle('active', page === 'rx');
+}
+
+tabTx.addEventListener('click', () => showPage('tx'));
+tabRx.addEventListener('click', () => showPage('rx'));
 
 function createBuilder(isArray) {
   const container = document.createElement('div');
