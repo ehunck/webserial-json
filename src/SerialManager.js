@@ -72,6 +72,9 @@ export class SerialManager {
     try {
       await this.reader.cancel().catch(() => {});
       this.reader.releaseLock();
+      if (this.writer) {
+        this.writer.releaseLock();
+      }
       await this.port.close();
     } finally {
       this.state = STATES.DISCONNECTED;
