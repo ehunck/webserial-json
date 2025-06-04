@@ -158,6 +158,10 @@ function buildJson() {
   return buildFields(fieldsDiv, false);
 }
 
+// update preview whenever any field input changes
+fieldsDiv.addEventListener('input', updatePreview);
+fieldsDiv.addEventListener('change', updatePreview);
+
 addFieldBtn.addEventListener('click', () => {
   fieldsDiv.appendChild(createField(false));
   updatePreview();
