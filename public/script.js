@@ -4,10 +4,13 @@ const output = document.getElementById('output');
 const input = document.getElementById('input');
 const connectBtn = document.getElementById('connect');
 const disconnectBtn = document.getElementById('disconnect');
+const sideConnectBtn = document.getElementById('side-connect');
+const sideDisconnectBtn = document.getElementById('side-disconnect');
 const sendBtn = document.getElementById('send');
 const fieldsDiv = document.getElementById('fields');
 const addFieldBtn = document.getElementById('add-field');
 const statusBar = document.getElementById('status');
+const title = document.getElementById('title');
 const tabTx = document.getElementById('tab-tx');
 const tabRx = document.getElementById('tab-rx');
 const txPage = document.getElementById('tx-page');
@@ -28,6 +31,7 @@ function showPage(page) {
   rxPage.classList.toggle('active', page === 'rx');
   tabTx.classList.toggle('active', page === 'tx');
   tabRx.classList.toggle('active', page === 'rx');
+  title.textContent = page === 'tx' ? 'Transmit' : 'Receive';
 }
 
 tabTx.addEventListener('click', () => showPage('tx'));
@@ -185,27 +189,37 @@ addFieldBtn.addEventListener('click', () => {
 fieldsDiv.appendChild(createField(false));
 updatePreview();
 
-connectBtn.addEventListener('click', async () => {
+async function handleConnect() {
   try {
     setStatus('Connecting...');
     await manager.connect();
     connectBtn.disabled = true;
+    sideConnectBtn.disabled = true;
     disconnectBtn.disabled = false;
+    sideDisconnectBtn.disabled = false;
     sendBtn.disabled = false;
     setStatus('Connected');
   } catch (e) {
     setStatus('Disconnected');
     alert(e.message);
   }
-});
+}
 
-disconnectBtn.addEventListener('click', async () => {
+async function handleDisconnect() {
   await manager.disconnect();
   connectBtn.disabled = false;
+  sideConnectBtn.disabled = false;
   disconnectBtn.disabled = true;
+  sideDisconnectBtn.disabled = true;
   sendBtn.disabled = true;
   setStatus('Disconnected');
-});
+}
+
+connectBtn.addEventListener('click', handleConnect);
+sideConnectBtn.addEventListener('click', handleConnect);
+
+disconnectBtn.addEventListener('click', handleDisconnect);
+sideDisconnectBtn.addEventListener('click', handleDisconnect);
 
 sendBtn.addEventListener('click', async () => {
   try {
