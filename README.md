@@ -16,3 +16,5 @@ npm test
 ## CI
 
 Tests are automatically run for pushes and pull requests using GitHub Actions.
+
+The content of `public/` is also deployed to GitHub Pages via the `Deploy GitHub Pages` workflow whenever changes are pushed to `main` or the workflow is manually run.
