@@ -12,96 +12,153 @@ const manager = new SerialManager(navigator.serial, (msg) => {
   output.value += JSON.stringify(msg) + '\n';
 });
 
-function createField() {
+function createBuilder(isArray) {
+  const container = document.createElement('div');
+  container.className = isArray ? 'builder-array' : 'builder-object';
+  const fields = document.createElement('div');
+  const add = document.createElement('button');
+  add.type = 'button';
+  add.textContent = isArray ? 'Add Item' : 'Add Field';
+  add.addEventListener('click', () => {
+    fields.appendChild(createField(isArray));
+    updatePreview();
+  });
+  container.append(fields, add);
+  return { container, fields };
+}
+
+function createField(isArrayItem = false) {
   const div = document.createElement('div');
   div.className = 'field-row';
+  const field = {};
 
-  const keyInput = document.createElement('input');
-  keyInput.placeholder = 'key';
+  if (!isArrayItem) {
+    field.keyInput = document.createElement('input');
+    field.keyInput.placeholder = 'key';
+    div.appendChild(field.keyInput);
+  }
 
-  const typeSelect = document.createElement('select');
+  field.typeSelect = document.createElement('select');
+
   ['string', 'int', 'float', 'boolean', 'array', 'object'].forEach(t => {
     const opt = document.createElement('option');
     opt.value = t;
     opt.textContent = t;
-    typeSelect.appendChild(opt);
+
+    field.typeSelect.appendChild(opt);
   });
+  div.appendChild(field.typeSelect);
 
-  let valueInput;
-  function updateValueInput() {
-    const old = valueInput;
-    if (typeSelect.value === 'boolean') {
-      const sel = document.createElement('select');
-      sel.innerHTML = '<option value="true">true</option><option value="false">false</option>';
-      valueInput = sel;
-    } else {
-      const inp = document.createElement('input');
-      inp.placeholder = 'value';
-      if (typeSelect.value === 'int') {
-        inp.type = 'number';
-        inp.step = '1';
-      } else if (typeSelect.value === 'float') {
-        inp.type = 'number';
-        inp.step = 'any';
-      }
-      valueInput = inp;
-    }
-    if (old) div.replaceChild(valueInput, old); else div.appendChild(valueInput);
-  }
-
-  typeSelect.addEventListener('change', updateValueInput);
-  updateValueInput();
+  field.valueContainer = document.createElement('div');
+  div.appendChild(field.valueContainer);
 
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   removeBtn.textContent = 'Remove';
-  removeBtn.addEventListener('click', () => div.remove());
+  removeBtn.addEventListener('click', () => {
+    div.remove();
+    updatePreview();
+  });
+  div.appendChild(removeBtn);
 
-  div.append(keyInput, typeSelect, valueInput, removeBtn);
+  function updateValue() {
+    field.valueContainer.innerHTML = '';
+    field.valueInput = null;
+    field.fields = null;
+    switch (field.typeSelect.value) {
+      case 'boolean': {
+        const sel = document.createElement('select');
+        sel.innerHTML = '<option value="true">true</option><option value="false">false</option>';
+        field.valueInput = sel;
+        break;
+      }
+      case 'int': {
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.step = '1';
+        field.valueInput = inp;
+        break;
+      }
+      case 'float': {
+        const inp = document.createElement('input');
+        inp.type = 'number';
+        inp.step = 'any';
+        field.valueInput = inp;
+        break;
+      }
+      case 'string': {
+        field.valueInput = document.createElement('input');
+        break;
+      }
+      case 'array': {
+        const b = createBuilder(true);
+        field.fields = b.fields;
+        field.valueContainer.appendChild(b.container);
+        break;
+      }
+      case 'object': {
+        const b = createBuilder(false);
+        field.fields = b.fields;
+        field.valueContainer.appendChild(b.container);
+        break;
+      }
+    }
+    if (field.valueInput) field.valueContainer.appendChild(field.valueInput);
+    updatePreview();
+  }
+
+  field.typeSelect.addEventListener('change', updateValue);
+  updateValue();
+
+  div._field = { field, isArrayItem };
   return div;
 }
 
+function buildFields(parent, isArray) {
+  const result = isArray ? [] : {};
+  parent.querySelectorAll(':scope > .field-row').forEach(row => {
+    const { field, isArrayItem } = row._field;
+    const type = field.typeSelect.value;
+    let value;
+    if (type === 'array') {
+      value = buildFields(field.fields, true);
+    } else if (type === 'object') {
+      value = buildFields(field.fields, false);
+    } else if (type === 'boolean') {
+      value = field.valueInput.value === 'true';
+    } else if (type === 'int') {
+      value = parseInt(field.valueInput.value, 10);
+    } else if (type === 'float') {
+      value = parseFloat(field.valueInput.value);
+    } else {
+      value = field.valueInput.value;
+    }
+    if (isArray) {
+      result.push(value);
+    } else {
+      const key = field.keyInput.value.trim();
+      if (key) result[key] = value;
+    }
+  });
+  return result;
+}
+
+function updatePreview() {
+  input.value = JSON.stringify(buildFields(fieldsDiv, false), null, 2);
+}
+
+function buildJson() {
+  return buildFields(fieldsDiv, false);
+}
+
 addFieldBtn.addEventListener('click', () => {
-  fieldsDiv.appendChild(createField());
+  fieldsDiv.appendChild(createField(false));
+  updatePreview();
 });
 
 // start with one field
-fieldsDiv.appendChild(createField());
-
-function buildJson() {
-  const obj = {};
-  fieldsDiv.querySelectorAll('.field-row').forEach(row => {
-    const [keyInput, typeSelect, valueInput] = row.children;
-    const key = keyInput.value.trim();
-    if (!key) return;
-    let value = valueInput.value;
-    switch (typeSelect.value) {
-      case 'int':
-        value = parseInt(value, 10);
-        break;
-      case 'float':
-        value = parseFloat(value);
-        break;
-      case 'boolean':
-        value = value === 'true';
-        break;
-      case 'array':
-      case 'object':
-        try {
-          value = JSON.parse(value);
-        } catch (e) {
-          throw new Error(`Invalid JSON in field "${key}"`);
-        }
-        break;
-      case 'string':
-      default:
-        // keep as string
-        break;
-    }
-    obj[key] = value;
-  });
-  return obj;
-}
+fieldsDiv.appendChild(createField(false));
+updatePreview();
 
 connectBtn.addEventListener('click', async () => {
   try {
