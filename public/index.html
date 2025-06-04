@@ -5,27 +5,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebSerial JSON</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: sans-serif;
-      margin: 1em;
+      margin: 0;
+      padding: 1rem;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 800px;
+      margin-inline: auto;
     }
+
+    #controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    #output {
+      width: 100%;
+      min-height: 10rem;
+    }
+
+    #builder {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
     #fields {
-      margin-bottom: 1em;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
+
     .field-row {
-      margin-bottom: 0.5em;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
     }
+
     .field-row input,
-    .field-row select {
-      margin-right: 0.5em;
+    .field-row select,
+    .field-row button {
+      font: inherit;
+      padding: 0.25rem 0.5rem;
+    }
+
+    #send-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
     }
   </style>
 </head>
 <body>
   <h1>WebSerial JSON Demo</h1>
-  <button id="connect">Connect</button>
-  <button id="disconnect" disabled>Disconnect</button>
-  <textarea id="output" rows="10" cols="50" readonly></textarea><br>
+  <div id="controls">
+    <button id="connect">Connect</button>
+    <button id="disconnect" disabled>Disconnect</button>
+  </div>
+  <textarea id="output" rows="10" cols="50" readonly></textarea>
 
   <div id="builder">
     <h2>Build JSON</h2>
@@ -33,8 +75,10 @@
     <button id="add-field" type="button">Add Field</button>
   </div>
 
-  <textarea id="input" rows="5" cols="50" placeholder='{"hello":"world"}'></textarea>
-  <button id="send" disabled>Send</button>
+  <div id="send-controls">
+    <textarea id="input" rows="5" cols="50" placeholder='{"hello":"world"}'></textarea>
+    <button id="send" disabled>Send</button>
+  </div>
 
   <script type="module" src="./script.js"></script>
 </body>
