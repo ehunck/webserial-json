@@ -39,10 +39,12 @@ function createField(isArrayItem = false) {
   }
 
   field.typeSelect = document.createElement('select');
+
   ['string', 'int', 'float', 'boolean', 'array', 'object'].forEach(t => {
     const opt = document.createElement('option');
     opt.value = t;
     opt.textContent = t;
+
     field.typeSelect.appendChild(opt);
   });
   div.appendChild(field.typeSelect);
