@@ -15,6 +15,7 @@ export class SerialManager {
     this.port = null;
     this.reader = null;
     this.writer = null;
+    this.readLoopPromise = null;
   }
 
   async connect(options = { baudRate: 9600 }) {
@@ -28,7 +29,7 @@ export class SerialManager {
       this.writer = this.port.writable.getWriter();
       this.reader = this.port.readable.getReader();
       this.state = STATES.CONNECTED;
-      this._readLoop();
+      this.readLoopPromise = this._readLoop();
     } catch (err) {
       this.state = STATES.DISCONNECTED;
       throw err;
@@ -52,6 +53,8 @@ export class SerialManager {
       }
     } catch (e) {
       // reading stopped
+    } finally {
+      this.readLoopPromise = null;
     }
   }
 
@@ -71,6 +74,10 @@ export class SerialManager {
     this.state = STATES.DISCONNECTING;
     try {
       await this.reader.cancel().catch(() => {});
+      if (this.readLoopPromise) {
+        await this.readLoopPromise.catch(() => {});
+        this.readLoopPromise = null;
+      }
       this.reader.releaseLock();
       if (this.writer) {
         this.writer.releaseLock();
