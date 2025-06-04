@@ -66,6 +66,13 @@
       gap: 0.5rem;
     }
 
+    #sidebar-controls {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
     #output {
       width: 100%;
       min-height: 10rem;
@@ -152,9 +159,13 @@
     <div id="sidebar">
       <div class="tab active" id="tab-tx" title="Transmit">📤</div>
       <div class="tab" id="tab-rx" title="Receive">📥</div>
+      <div id="sidebar-controls">
+        <button id="side-connect">Connect</button>
+        <button id="side-disconnect" disabled>Disconnect</button>
+      </div>
     </div>
     <div id="main">
-      <h1>WebSerial JSON Demo</h1>
+      <h1 id="title">Transmit</h1>
 
       <div id="controls">
         <button id="connect">Connect</button>
