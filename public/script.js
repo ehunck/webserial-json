@@ -193,9 +193,9 @@ async function handleConnect() {
   try {
     setStatus('Connecting...');
     await manager.connect();
-    connectBtn.disabled = true;
+    if (connectBtn) connectBtn.disabled = true;
     sideConnectBtn.disabled = true;
-    disconnectBtn.disabled = false;
+    if (disconnectBtn) disconnectBtn.disabled = false;
     sideDisconnectBtn.disabled = false;
     sendBtn.disabled = false;
     setStatus('Connected');
@@ -207,18 +207,18 @@ async function handleConnect() {
 
 async function handleDisconnect() {
   await manager.disconnect();
-  connectBtn.disabled = false;
+  if (connectBtn) connectBtn.disabled = false;
   sideConnectBtn.disabled = false;
-  disconnectBtn.disabled = true;
+  if (disconnectBtn) disconnectBtn.disabled = true;
   sideDisconnectBtn.disabled = true;
   sendBtn.disabled = true;
   setStatus('Disconnected');
 }
 
-connectBtn.addEventListener('click', handleConnect);
+if (connectBtn) connectBtn.addEventListener('click', handleConnect);
 sideConnectBtn.addEventListener('click', handleConnect);
 
-disconnectBtn.addEventListener('click', handleDisconnect);
+if (disconnectBtn) disconnectBtn.addEventListener('click', handleDisconnect);
 sideDisconnectBtn.addEventListener('click', handleDisconnect);
 
 sendBtn.addEventListener('click', async () => {

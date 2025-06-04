@@ -31,7 +31,7 @@
 
     #app {
       display: grid;
-      grid-template-columns: 50px 1fr;
+      grid-template-columns: 120px 1fr;
       grid-template-rows: 1fr auto;
       height: 100%;
     }
@@ -59,11 +59,6 @@
       color: var(--status-fg);
       padding: 0.25rem 0.5rem;
       font-size: 0.9rem;
-    }
-
-    #controls {
-      display: flex;
-      gap: 0.5rem;
     }
 
     #sidebar-controls {
@@ -157,8 +152,8 @@
 <body>
   <div id="app">
     <div id="sidebar">
-      <div class="tab active" id="tab-tx" title="Transmit">📤</div>
-      <div class="tab" id="tab-rx" title="Receive">📥</div>
+      <div class="tab active" id="tab-tx" title="Transmit">&#x2191;</div>
+      <div class="tab" id="tab-rx" title="Receive">&#x2193;</div>
       <div id="sidebar-controls">
         <button id="side-connect">Connect</button>
         <button id="side-disconnect" disabled>Disconnect</button>
@@ -166,11 +161,6 @@
     </div>
     <div id="main">
       <h1 id="title">Transmit</h1>
-
-      <div id="controls">
-        <button id="connect">Connect</button>
-        <button id="disconnect" disabled>Disconnect</button>
-      </div>
 
       <div id="tx-page" class="page active">
         <div id="builder">
